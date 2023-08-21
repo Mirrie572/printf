@@ -1,10 +1,5 @@
 #include "main.h"
 
-int handle_char(char c, char buffer[], int *buff_idx);
-int handle_string(char *str, char buffer[], int *buff_idx);
-int handle_percent(char buffer[], int *buff_idx);
-
-
 /**
  * _printf - Custom printf function
  * @format: Format string
@@ -60,13 +55,8 @@ int _printf(const char *format, ...)
 	return (printed_chars);
 }
 
-/**
- * handle_char - Handle %c specifier
- * @c: Character to be printed
- * @buffer: Buffer to store characters
- * @buff_idx: Index of buffer
- * Return: Number of characters printed
- */
+/* Helper functions for each specifier */
+
 int handle_char(char c, char buffer[], int *buff_idx)
 {
 	buffer[(*buff_idx)++] = c;
@@ -75,20 +65,12 @@ int handle_char(char c, char buffer[], int *buff_idx)
 		write(1, buffer, BUFFER_SIZE);
 		*buff_idx = 0;
 	}
-	return (1);
+	return 1;
 }
 
-/**
- * handle_string - Handle %s specifier
- * @str: String to be printed
- * @buffer: Buffer to store characters
- * @buff_idx: Index of buffer
- * Return: Number of characters printed
- */
 int handle_string(char *str, char buffer[], int *buff_idx)
 {
 	int len = strlen(str);
-
 	if (*buff_idx + len >= BUFFER_SIZE)
 	{
 		write(1, buffer, *buff_idx);
@@ -96,15 +78,9 @@ int handle_string(char *str, char buffer[], int *buff_idx)
 	}
 	strcpy(buffer + *buff_idx, str);
 	*buff_idx += len;
-	return (len);
+	return len;
 }
 
-/**
- * handle_percent - Handle %% specifier
- * @buffer: Buffer to store characters
- * @buff_idx: Index of buffer
- * Return: Number of characters printed
- */
 int handle_percent(char buffer[], int *buff_idx)
 {
 	buffer[(*buff_idx)++] = '%';
@@ -113,5 +89,5 @@ int handle_percent(char buffer[], int *buff_idx)
 		write(1, buffer, BUFFER_SIZE);
 		*buff_idx = 0;
 	}
-	return (1);
+	return 1;
 }
