@@ -1,54 +1,63 @@
 #include "main.h"
 
 /**
- * _printf - Printf function
- * @format: format
- * Return: Number of printed characters
+ * _printf - Custom implementation of printf function
+ * @format: Format string
+ * @...: Additional arguments
+ * Return: Number of characters printed
  */
+
+/* Betty 40 lines in a function error */
+
 int _printf(const char *format, ...)
 {
+	int count = 0;  /* Initialize the count of printed characters */
+
 	va_list args;
-	int format_index, printed_chars = 0, buffer_index = 0;
-	char buffer[BUFFER_SIZE];
+
+	char c, *s;
 
 	if (format == NULL)
 		return (-1);
 
 	va_start(args, format);
 
-	for (format_index = 0; format && format[format_index] != '\0'; format_index++)
+	for (; *format; format++)
 	{
-		if (format[format_index] != '%')
+		if (*format != '%')
 		{
-			buffer[buffer_index++] = format[format_index];
-			if (buffer_index == BUFFER_SIZE)
-				print_buffer(buffer, &buffer_index);
-			printed_chars++;
+			write(1, format, 1);
+			count++;  /* Increment count for each printed character */
 		}
 		else
 		{
-			print_buffer(buffer, &buffer_index);
-			/* Handle conversion specifiers here */
+			format++;
+
+			if (*format == 'c')
+			{
+				c = va_arg(args, int);
+				write(1, &c, 1);
+				count++;
+			}
+			else if (*format == 's')
+			{
+				s = va_arg(args, char *);
+
+				for (; *s; s++)
+				{
+					write(1, s, 1);
+					count++;
+				}
+			}
+			else if (*format == '%')
+			{
+				write(1, format, 1);
+				count++;
+			}
 		}
 	}
 
-	print_buffer(buffer, &buffer_index);
-
 	va_end(args);
 
-	return (printed_chars);
-}
-
-/**
- * print_buffer - Prints the buffer if it's not empty
- * @buffer: Array of chars
- * @buffer_index: Index of the buffer
- */
-void print_buffer(char buffer[], int *buffer_index)
-{
-	if (*buffer_index > 0)
-	{
-		write(1, &buffer[0], *buffer_index);
-		*buffer_index = 0;
-	}
+	return (count);
 }
