@@ -1,4 +1,5 @@
 #include "main.h"
+int _printf(const char *format, ...);
 
 /**
  * _printf - Custom implementation of printf function
@@ -6,15 +7,10 @@
  * @...: Additional arguments
  * Return: Number of characters printed
  */
-
-/* Betty 40 lines in a function error */
-
 int _printf(const char *format, ...)
 {
 	int count = 0;  /* Initialize the count of printed characters */
-
 	va_list args;
-
 	char c, *s;
 
 	if (format == NULL)
@@ -36,7 +32,9 @@ int _printf(const char *format, ...)
 			if (*format == 'c')
 			{
 				c = va_arg(args, int);
+
 				write(1, &c, 1);
+
 				count++;
 			}
 			else if (*format == 's')
