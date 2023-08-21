@@ -8,7 +8,7 @@
  */
 int _printf(const char *format, ...)
 {
-	int count = 0;
+	int count = 0;  /* Initialize the count of printed characters */
 	va_list args;
 	char c, *s;
 
@@ -17,12 +17,12 @@ int _printf(const char *format, ...)
 
 	va_start(args, format);
 
-	while (*format)
+	for (; *format; format++)
 	{
 		if (*format != '%')
 		{
-			write(1, format++, 1);
-			count++;
+			write(1, format, 1);
+			count++;  /* Increment count for each printed character */
 		}
 		else
 		{
@@ -31,22 +31,24 @@ int _printf(const char *format, ...)
 			if (*format == 'c')
 			{
 				c = va_arg(args, int);
+
 				write(1, &c, 1);
+
 				count++;
 			}
 			else if (*format == 's')
 			{
 				s = va_arg(args, char *);
 
-				while (*s)
+				for (; *s; s++)
 				{
-					write(1, s++, 1);
+					write(1, s, 1);
 					count++;
 				}
 			}
 			else if (*format == '%')
 			{
-				write(1, format++, 1);
+				write(1, format, 1);
 				count++;
 			}
 		}
