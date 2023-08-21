@@ -1,60 +1,89 @@
 #include "main.h"
 
-void fprint_buffer(char buffer[], int *buffer_index);
+/**
+ * handle_conv - Handles conversion specifiers and prints
+ * @spec: Conversion specifier ('c', 's', '%')
+ * @args: Variable argument list
+ * @buff: Output buffer
+ * @buff_i: Buffer index
+ * Return: Number of printed characters
+ */
+
+int handle_conv(char spec, va_list *args, char buff[], int *buff_i);
 
 /**
- * _printf - Custom implementation of printf function
- * @format: The format string containing placeholders
- * @...: Additional arguments to be inserted into placeholders
- *
- * Return: Number of characters printed
- *         excluding the null byte used to end output to strings
+ * _printf - Custom printf function
+ * @format: The format string
+ * @...: Additional arguments
+ * Return: Number of printed characters (excluding null byte)
  */
+
 int _printf(const char *format, ...)
 {
 	va_list args;
-	int format_index, printed_chars = 0, buffer_index = 0;
-	char buffer[BUFFER_SIZE];
+	int fmt_i, chars_printed = 0, buff_i = 0;
+	char buff[BUFFER_SIZE];
 
-	if (format == NULL)
+	if (!format)
 		return (-1);
 
 	va_start(args, format);
 
-	for (format_index = 0; format && format[format_index] != '\0'; format_index++)
+	for (fmt_i = 0; format && format[fmt_i] != '\0'; fmt_i++)
 	{
-		if (format[format_index] != '%')
+		if (format[fmt_i] != '%')
 		{
-			buffer[buffer_index++] = format[format_index];
-			if (buffer_index == BUFFER_SIZE)
-				fprint_buffer(buffer, &buffer_index);
-			printed_chars++;
+			buff[buff_i++] = format[fmt_i];
+			if (buff_i == BUFFER_SIZE)
+				fprint_buffer(buff, &buff_i);
+			chars_printed++;
 		}
 		else
 		{
-			fprint_buffer(buffer, &buffer_index);
-			/* Handle conversion specifiers here */
+			fprint_buffer(buff, &buff_i);
+			fmt_i++;
+			chars_printed += handle_conv(format[fmt_i], &args, buff, &buff_i);
 		}
 	}
 
-	fprint_buffer(buffer, &buffer_index);
+	fprint_buffer(buff, &buff_i);
 
 	va_end(args);
 
-	return (printed_chars);
+	return (chars_printed);
 }
 
-/**
- * fprint_buffer - Flushes the buffer and prints its contents to stdout
- * @buffer: Array of characters to be printed
- * @buffer_index: Pointer to the index of
- *                the last character in the buffer
- */
-void fprint_buffer(char buffer[], int *buffer_index)
+int handle_conv(char spec, va_list *args, char buff[], int *buff_i)
 {
-	if (*buffer_index > 0)
+	int chars_printed = 0;
+
+	if (spec == 'c')
 	{
-		write(1, &buffer[0], *buffer_index);
-		*buffer_index = 0;
+		char c = va_arg(*args, int);
+
+		buff[(*buff_i)++] = c;
+
+		chars_printed++;
 	}
+	else if (spec == 's')
+	{
+		char *s = va_arg(*args, char *);
+
+		int i;
+
+		for (i = 0; s[i] != '\0'; i++)
+		{
+			buff[(*buff_i)++] = s[i];
+			if (*buff_i == BUFFER_SIZE)
+				fprint_buffer(buff, buff_i);
+			chars_printed++;
+		}
+	}
+	else if (spec == '%')
+	{
+		buff[(*buff_i)++] = '%';
+		chars_printed++;
+	}
+
+	return (chars_printed);
 }
