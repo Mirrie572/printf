@@ -1,4 +1,5 @@
 #include "main.h"
+int _printf(const char *format, ...);
 
 /**
  * _printf - Custom implementation of printf function
