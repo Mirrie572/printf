@@ -1,20 +1,27 @@
 #include "main.h"
 
-int handle_char(char c, char buffer[], int *buff_idx);
-int handle_string(char *str, char buffer[], int *buff_idx);
-int handle_percent(char buffer[], int *buff_idx);
-
+/**
+ * _printf - Custom printf implementation
+ * @format: Format string with placeholders
+ * @...: Additional arguments for placeholders
+ * Return: Number of printed characters excluding null byte
+ */
+int _printf(const char *format, ...);
 
 /**
- * _printf - Custom printf function
- * @format: Format string
- * @...: Additional arguments
- * Return: Number of characters printed
+ * hconv - Handle conversion specifiers
+ * @spec: Conversion specifier (e.g., 'c', 's', '%')
+ * @args: va_list containing arguments
+ * @buff: Output buffer for printed characters
+ * @idx: Pointer to index of last character in buffer
+ * Return: Number of printed characters for specifier
  */
+int hconv(char spec, va_list *args, char buff[], int *idx);
+
 int _printf(const char *format, ...)
 {
-	int i, printed_chars = 0, buff_idx = 0;
 	va_list args;
+	int format_idx, chars_printed = 0, buff_idx = 0;
 	char buffer[BUFFER_SIZE];
 
 	if (format == NULL)
@@ -22,96 +29,60 @@ int _printf(const char *format, ...)
 
 	va_start(args, format);
 
-	for (i = 0; format && format[i] != '\0'; i++)
+	for (format_idx = 0; format && format[format_idx] != '\0'; format_idx++)
 	{
-		if (format[i] != '%')
+		if (format[format_idx] != '%')
 		{
-			buffer[buff_idx++] = format[i];
+			buffer[buff_idx++] = format[format_idx];
 			if (buff_idx == BUFFER_SIZE)
-			{
-				write(1, buffer, buff_idx);
-				buff_idx = 0;
-			}
-			printed_chars++;
+				fprint_buffer(buffer, &buff_idx);
+			chars_printed++;
 		}
 		else
 		{
-			if (buff_idx > 0)
-			{
-				write(1, buffer, buff_idx);
-				buff_idx = 0;
-			}
-			i++;
-
-			if (format[i] == 'c')
-				printed_chars += handle_char(va_arg(args, int), buffer, &buff_idx);
-			else if (format[i] == 's')
-				printed_chars += handle_string(va_arg(args, char *), buffer, &buff_idx);
-			else if (format[i] == '%')
-				printed_chars += handle_percent(buffer, &buff_idx);
+			fprint_buffer(buffer, &buff_idx);
+			format_idx++;
+			chars_printed += hconv(format[format_idx], &args, buffer, &buff_idx);
 		}
 	}
 
-	if (buff_idx > 0)
-		write(1, buffer, buff_idx);
+	fprint_buffer(buffer, &buff_idx);
 
 	va_end(args);
 
-	return (printed_chars);
+	return (chars_printed);
 }
 
-/**
- * handle_char - Handle %c specifier
- * @c: Character to be printed
- * @buffer: Buffer to store characters
- * @buff_idx: Index of buffer
- * Return: Number of characters printed
- */
-int handle_char(char c, char buffer[], int *buff_idx)
+int hconv(char spec, va_list *args, char buff[], int *idx)
 {
-	buffer[(*buff_idx)++] = c;
-	if (*buff_idx == BUFFER_SIZE)
-	{
-		write(1, buffer, BUFFER_SIZE);
-		*buff_idx = 0;
-	}
-	return (1);
-}
+	int c_printed = 0;
 
-/**
- * handle_string - Handle %s specifier
- * @str: String to be printed
- * @buffer: Buffer to store characters
- * @buff_idx: Index of buffer
- * Return: Number of characters printed
- */
-int handle_string(char *str, char buffer[], int *buff_idx)
-{
-	int len = strlen(str);
-
-	if (*buff_idx + len >= BUFFER_SIZE)
+	if (spec == 'c')
 	{
-		write(1, buffer, *buff_idx);
-		*buff_idx = 0;
-	}
-	strcpy(buffer + *buff_idx, str);
-	*buff_idx += len;
-	return (len);
-}
+		char c = va_arg(*args, int);
 
-/**
- * handle_percent - Handle %% specifier
- * @buffer: Buffer to store characters
- * @buff_idx: Index of buffer
- * Return: Number of characters printed
- */
-int handle_percent(char buffer[], int *buff_idx)
-{
-	buffer[(*buff_idx)++] = '%';
-	if (*buff_idx == BUFFER_SIZE)
-	{
-		write(1, buffer, BUFFER_SIZE);
-		*buff_idx = 0;
+		buff[(*idx)++] = c;
+
+		c_printed++;
 	}
-	return (1);
+	else if (spec == 's')
+	{
+		char *s = va_arg(*args, char *);
+		int i;
+
+		for (i = 0; s[i] != '\0'; i++)
+		{
+			buff[(*idx)++] = s[i];
+			if (*idx == BUFFER_SIZE)
+				fprint_buffer(buff, idx);
+			c_printed++;
+		}
+	}
+	else if (spec == '%')
+	{
+		buff[(*idx)++] = '%';
+		c_printed++;
+	}
+
+	return (c_printed);
 }
