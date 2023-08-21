@@ -1,27 +1,14 @@
 #include "main.h"
 
 /**
- * _printf - Custom printf implementation
- * @format: Format string with placeholders
- * @...: Additional arguments for placeholders
- * Return: Number of printed characters excluding null byte
+ * _printf - Printf function
+ * @format: format
+ * Return: Number of printed characters
  */
-int _printf(const char *format, ...);
-
-/**
- * hconv - Handle conversion specifiers
- * @spec: Conversion specifier (e.g., 'c', 's', '%')
- * @args: va_list containing arguments
- * @buff: Output buffer for printed characters
- * @idx: Pointer to index of last character in buffer
- * Return: Number of printed characters for specifier
- */
-int hconv(char spec, va_list *args, char buff[], int *idx);
-
 int _printf(const char *format, ...)
 {
 	va_list args;
-	int format_idx, chars_printed = 0, buff_idx = 0;
+	int format_index, printed_chars = 0, buffer_index = 0;
 	char buffer[BUFFER_SIZE];
 
 	if (format == NULL)
@@ -29,60 +16,39 @@ int _printf(const char *format, ...)
 
 	va_start(args, format);
 
-	for (format_idx = 0; format && format[format_idx] != '\0'; format_idx++)
+	for (format_index = 0; format && format[format_index] != '\0'; format_index++)
 	{
-		if (format[format_idx] != '%')
+		if (format[format_index] != '%')
 		{
-			buffer[buff_idx++] = format[format_idx];
-			if (buff_idx == BUFFER_SIZE)
-				fprint_buffer(buffer, &buff_idx);
-			chars_printed++;
+			buffer[buffer_index++] = format[format_index];
+			if (buffer_index == BUFFER_SIZE)
+				print_buffer(buffer, &buffer_index);
+			printed_chars++;
 		}
 		else
 		{
-			fprint_buffer(buffer, &buff_idx);
-			format_idx++;
-			chars_printed += hconv(format[format_idx], &args, buffer, &buff_idx);
+			print_buffer(buffer, &buffer_index);
+			/* Handle conversion specifiers here */
 		}
 	}
 
-	fprint_buffer(buffer, &buff_idx);
+	print_buffer(buffer, &buffer_index);
 
 	va_end(args);
 
-	return (chars_printed);
+	return (printed_chars);
 }
 
-int hconv(char spec, va_list *args, char buff[], int *idx)
+/**
+ * print_buffer - Prints the buffer if it's not empty
+ * @buffer: Array of chars
+ * @buffer_index: Index of the buffer
+ */
+void print_buffer(char buffer[], int *buffer_index)
 {
-	int c_printed = 0;
-
-	if (spec == 'c')
+	if (*buffer_index > 0)
 	{
-		char c = va_arg(*args, int);
-
-		buff[(*idx)++] = c;
-
-		c_printed++;
+		write(1, &buffer[0], *buffer_index);
+		*buffer_index = 0;
 	}
-	else if (spec == 's')
-	{
-		char *s = va_arg(*args, char *);
-		int i;
-
-		for (i = 0; s[i] != '\0'; i++)
-		{
-			buff[(*idx)++] = s[i];
-			if (*idx == BUFFER_SIZE)
-				fprint_buffer(buff, idx);
-			c_printed++;
-		}
-	}
-	else if (spec == '%')
-	{
-		buff[(*idx)++] = '%';
-		c_printed++;
-	}
-
-	return (c_printed);
 }
