@@ -30,5 +30,6 @@
  */
 
 int _printf(const char *format, ...);
+int print_decimal(va_list types, char buffer[], int flags, int width, int precision, int size);
 
 #endif
