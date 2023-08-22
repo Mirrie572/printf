@@ -8,17 +8,6 @@
 #define BUFFER_SIZE 1024
 
 
-/* FLAGS */
-#define F_MINUS 1
-#define F_PLUS 2
-#define F_ZERO 4
-#define F_HASH 8
-#define F_SPACE 16
-
-/* SIZES */
-#define S_LONG 2
-#define S_SHORT 1
-
 
 /**
  * _printf - Custom implementation of printf function
@@ -29,8 +18,8 @@
  * Return: Number of characters printed
  */
 
-int _printf(const char *format, ...);
-int print_decimal(va_list types, char buffer[], int flags, int width, int precision, int size);
+/* prototypes */
+
 int _printf(const char *format, ...);
 void fprint_buffer(char buffer[], int *buffer_index);
 int handle_format(const char *format, va_list *args);
@@ -38,5 +27,6 @@ int handle_char(int c);
 int handle_string(char *s);
 int handle_integer(int num);
 int handle_binary(unsigned int n);
+int _putchar(int num, int count);
 
 #endif
