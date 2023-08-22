@@ -31,5 +31,12 @@
 
 int _printf(const char *format, ...);
 int print_decimal(va_list types, char buffer[], int flags, int width, int precision, int size);
+int _printf(const char *format, ...);
+void fprint_buffer(char buffer[], int *buffer_index);
+int handle_format(const char *format, va_list *args);
+int handle_char(int c);
+int handle_string(char *s);
+int handle_integer(int num);
+int handle_binary(unsigned int n);
 
 #endif
