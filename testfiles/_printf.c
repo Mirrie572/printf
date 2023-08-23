@@ -1,40 +1,42 @@
 #include "main.h"
 
 /**
- * _printf - loops through format string, handles special chars
- * @format: string that contains format specifiers
- * Return: total count of characters printed
+ * _printf - Custom implementation of printf function
+ * @format: Arguments to the function
+ * @...: aditional arguments
+ * Return: A format string to output
  */
+
 int _printf(const char *format, ...)
 {
-	int sumup = 0;
-	char specifier;
-
+	int count = 0;
 	va_list args;
-	int index = 0;
 
-	va_start(args, format);
-
-	if (format[0] == '\0')
+	if (format == NULL)
 		return (-1);
 
-	while (format[index])
+	va_start(args, format);
+	while (*format)
 	{
-		if (format[index] == '%')
+		if (*format == '%')
 		{
-			specifier = format[index + 1];
-			sumup += (*pick_handler(specifier))(args);
-			index += 2;
+			format++;
+			if (*format == '\0' || *format == ' ')
+				break;
+
+			if (*format == 'c')
+				count += handle_c(args);
+			else if (*format == 's')
+				count += handle_s(args);
+			else if (*format == '%')
+				count += print_char('%');
 		}
 		else
 		{
-			_putchar(format[index]);
-			sumup++;
-			index++;
+			count += print_char(*format);
 		}
+		format++;
 	}
-
 	va_end(args);
-
-	return (sumup);
+	return (count);
 }
