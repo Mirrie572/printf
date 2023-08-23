@@ -1,11 +1,12 @@
 #include "main.h"
 
 /**
- * _printf - Custom implementation of printf function
+ * _printf - custom print function
  * @format: Arguments to the function
- * @...: aditional arguments
- * Return: A format string to output
+ * @...: additional arguments
+ * Return: A format string
  */
+
 
 int _printf(const char *format, ...)
 {
@@ -20,9 +21,11 @@ int _printf(const char *format, ...)
 	{
 		if (*format == '%')
 		{
+			while (*(format + 1) == ' ')
+				format++;
 			format++;
 			if (*format == '\0' || *format == ' ')
-				break;
+				return (-1);
 
 			if (*format == 'c')
 				count += handle_c(args);
@@ -30,6 +33,11 @@ int _printf(const char *format, ...)
 				count += handle_s(args);
 			else if (*format == '%')
 				count += print_char('%');
+			else
+			{
+				format--;
+				count += print_char(*format);
+			}
 		}
 		else
 		{
