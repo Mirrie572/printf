@@ -28,5 +28,9 @@ int handle_string(char *s);
 int handle_integer(int num);
 int handle_binary(unsigned int n);
 int _putchar(int num, int count);
+int print_string(char *str);
+int handle_s(va_list args);
+int print_char(char c);
+int handle_c(va_list args);
 
 #endif
